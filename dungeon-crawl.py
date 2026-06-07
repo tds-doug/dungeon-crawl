@@ -213,6 +213,31 @@ class Shopkeeper:
         return stock
 
 
+class Ally:
+    """A companion that follows the player for up to 50 moves."""
+    TYPES = {
+        "elf":   dict(name="Elf Archer",   ch="e", col="g"),
+        "dwarf": dict(name="Dwarf Warrior", ch="d", col="y"),
+    }
+
+    def __init__(self, atype: str, x: int, y: int):
+        info        = self.TYPES[atype]
+        self.atype  = atype
+        self.name   = info["name"]
+        self.ch     = info["ch"]
+        self.col    = info["col"]
+        self.x      = x
+        self.y      = y
+        self.moves_left = 50
+
+    def alive(self) -> bool:
+        return self.moves_left > 0
+
+    def atk_roll(self, player_level: int) -> int:
+        base = 4 + player_level * 2 if self.atype == "elf" else 3 + player_level * 2
+        return base + random.randint(0, 3)
+
+
 class Player:
     def __init__(self):
         self.x         = 0
@@ -228,6 +253,7 @@ class Player:
         self.weapon    = WEAPONS[0].copy()
         self.armor     = ARMORS[0].copy()
         self.potions: List[dict] = []
+        self.allies:  List[Ally] = []
         self.kills     = 0
         self.depth     = 1
 
@@ -286,6 +312,7 @@ class DungeonLevel:
         self.monsters: List[Monster]     = []
         self.treasures: List[Treasure]   = []
         self.floor_potions: List[Tuple[int, int]] = []
+        self.floor_allies:  List[Ally]           = []
         self.shopkeeper: Optional[Shopkeeper] = None
         self.stair_x   = 0
         self.stair_y   = 0
@@ -404,6 +431,7 @@ class DungeonLevel:
                 self._place_treasure(room, self.depth)
 
         self._place_floor_potions(rooms, shop_idx)
+        self._place_allies(rooms, shop_idx)
 
     def _place_floor_potions(self, rooms: list, shop_idx: int):
         """Scatter health potions across rooms (skip spawn room and shop room)."""
@@ -419,6 +447,30 @@ class DungeonLevel:
                         (px, py) != (self.stair_x, self.stair_y)):
                     self.floor_potions.append((px, py))
                     break
+
+    def _place_allies(self, rooms: list, shop_idx: int):
+        """Spawn one elf and one dwarf on the floor in separate rooms."""
+        eligible = [r for i, r in enumerate(rooms) if i != 0 and i != shop_idx]
+        random.shuffle(eligible)
+        taken_positions: List[Tuple[int, int]] = []
+        for atype, room in zip(("elf", "dwarf"), eligible[:2]):
+            for _attempt in range(20):
+                ax, ay = room.random_inner()
+                if (self.tiles[ay][ax] == FLOOR and
+                        (ax, ay) not in self.floor_potions and
+                        (ax, ay) not in taken_positions and
+                        not self.treasure_at(ax, ay) and
+                        not self.monster_at(ax, ay) and
+                        (ax, ay) != (self.stair_x, self.stair_y)):
+                    self.floor_allies.append(Ally(atype, ax, ay))
+                    taken_positions.append((ax, ay))
+                    break
+
+    def _ally_at(self, x: int, y: int) -> Optional[Ally]:
+        for a in self.floor_allies:
+            if a.x == x and a.y == y:
+                return a
+        return None
 
     # ── Queries ───────────────────────────────────────────────
 
@@ -456,6 +508,10 @@ class Game:
         ('$', CP_TREASURE, 'Gold / Shop'),
         ('*', CP_TREASURE, 'Item + Gold'),
         ('!', CP_MSG_GOOD, 'Health Potion'),
+    ]
+    LEGEND_ALLY = [
+        ('e', CP_MON_G, 'Elf Archer'),
+        ('d', CP_MON_Y, 'Dwarf Warrior'),
     ]
     LEGEND_MON = [
         ('r', CP_MON_Y, 'Giant Rat'),
@@ -606,6 +662,13 @@ class Game:
                 self._safe_addch(sy, sx, '!',
                                  curses.color_pair(CP_MSG_GOOD) | curses.A_BOLD)
 
+        # ── Floor allies (not yet picked up) ──────────────────
+        for a in lv.floor_allies:
+            sx, sy = a.x - cam_x, a.y - cam_y
+            if 0 <= sx < map_w and 0 <= sy < map_h:
+                self._safe_addch(sy, sx, a.ch,
+                                 curses.color_pair(self._mon_color(a.col)) | curses.A_BOLD)
+
         # ── Monsters ──────────────────────────────────────────
         for m in lv.monsters:
             if not m.alive():
@@ -614,6 +677,15 @@ class Game:
             if 0 <= sx < map_w and 0 <= sy < map_h:
                 self._safe_addch(sy, sx, m.ch,
                                  curses.color_pair(self._mon_color(m.col)) | curses.A_BOLD)
+
+        # ── Active allies (following player) ──────────────────
+        for a in pl.allies:
+            if not a.alive():
+                continue
+            sx, sy = a.x - cam_x, a.y - cam_y
+            if 0 <= sx < map_w and 0 <= sy < map_h:
+                self._safe_addch(sy, sx, a.ch,
+                                 curses.color_pair(self._mon_color(a.col)) | curses.A_BOLD)
 
         # ── Player ────────────────────────────────────────────
         px, py = pl.x - cam_x, pl.y - cam_y
@@ -677,9 +749,27 @@ class Game:
         else:
             pline(22, " Potions: none", CP_WALL)
 
+        # ── Active allies in panel ────────────────────────────
+        panel_row = 23
+        active_allies = [a for a in pl.allies if a.alive()]
+        if active_allies:
+            pline(panel_row, "-" * pw, CP_DEFAULT);  panel_row += 1
+            pline(panel_row, " ALLIES", CP_MON_Y, True);  panel_row += 1
+            for a in active_allies:
+                if panel_row < h:
+                    try:
+                        self.scr.addch(panel_row, px0 + 1, a.ch,
+                                       curses.color_pair(self._mon_color(a.col)) | curses.A_BOLD)
+                        label = f" {a.name} ({a.moves_left})"
+                        self.scr.addstr(panel_row, px0 + 2, label[:pw - 2],
+                                        curses.color_pair(CP_DEFAULT))
+                    except curses.error:
+                        pass
+                    panel_row += 1
+
         # ── Legend ────────────────────────────────────────────
         hint_row = h - self.MSG_H - 2
-        legend_start = 23
+        legend_start = panel_row
         legend_end   = hint_row - 2   # leave room for separator + hint
 
         row = legend_start
@@ -687,40 +777,34 @@ class Game:
             pline(row, "-" * pw, CP_DEFAULT);  row += 1
         if row < legend_end:
             pline(row, " LEGEND", CP_TITLE, True);  row += 1
+
+        def draw_legend_entries(entries):
+            nonlocal row
+            for ch, cp, label in entries:
+                if row >= legend_end:
+                    break
+                if 0 <= row < h:
+                    try:
+                        self.scr.addch(row, px0,     ' ')
+                        self.scr.addch(row, px0 + 1, ch,
+                                       curses.color_pair(cp) | curses.A_BOLD)
+                        self.scr.addstr(row, px0 + 2, f"  {label}"[:pw - 2],
+                                        curses.color_pair(CP_DEFAULT))
+                    except curses.error:
+                        pass
+                row += 1
+
         if row < legend_end:
             pline(row, " MAP", CP_MSG_INFO);  row += 1
+        draw_legend_entries(self.LEGEND_MAP)
 
-        for ch, cp, label in self.LEGEND_MAP:
-            if row >= legend_end:
-                break
-            # draw colored glyph then plain label
-            if 0 <= row < h:
-                try:
-                    self.scr.addch(row, px0,     ' ')
-                    self.scr.addch(row, px0 + 1, ch,
-                                   curses.color_pair(cp) | curses.A_BOLD)
-                    self.scr.addstr(row, px0 + 2, f"  {label}"[:pw - 2],
-                                    curses.color_pair(CP_DEFAULT))
-                except curses.error:
-                    pass
-            row += 1
+        if row < legend_end:
+            pline(row, " ALLIES", CP_MON_Y);  row += 1
+        draw_legend_entries(self.LEGEND_ALLY)
 
         if row < legend_end:
             pline(row, " MONSTERS", CP_MSG_INFO);  row += 1
-
-        for ch, cp, label in self.LEGEND_MON:
-            if row >= legend_end:
-                break
-            if 0 <= row < h:
-                try:
-                    self.scr.addch(row, px0,     ' ')
-                    self.scr.addch(row, px0 + 1, ch,
-                                   curses.color_pair(cp) | curses.A_BOLD)
-                    self.scr.addstr(row, px0 + 2, f"  {label}"[:pw - 2],
-                                    curses.color_pair(CP_DEFAULT))
-                except curses.error:
-                    pass
-            row += 1
+        draw_legend_entries(self.LEGEND_MON)
 
         # Controls hint at bottom of panel
         pline(hint_row - 1, "-" * pw, CP_DEFAULT)
@@ -784,6 +868,14 @@ class Game:
             pl.hp = pl.max_hp
             self.msg("You drink a Health Potion! HP fully restored!", CP_MSG_GOOD)
 
+        # Pick up floor ally
+        a = lv._ally_at(nx, ny)
+        if a:
+            lv.floor_allies.remove(a)
+            pl.allies.append(a)
+            self.msg(f"A {a.name} joins you for 50 moves!", CP_MON_Y)
+            self._reposition_allies()
+
         # Pick up treasure
         t = lv.treasure_at(nx, ny)
         if t:
@@ -800,6 +892,25 @@ class Game:
 
         # Monsters take a turn
         self._monster_turns()
+
+    def _reposition_allies(self):
+        """Move each active ally to a free tile adjacent to the player."""
+        pl  = self.player
+        lv  = self.level
+        dirs = [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(1,-1),(-1,1),(1,1)]
+        occupied = {(pl.x, pl.y)}
+        for a in pl.allies:
+            if not a.alive():
+                continue
+            candidates = [(pl.x + dx, pl.y + dy) for dx, dy in dirs]
+            free = [pos for pos in candidates
+                    if lv.walkable(*pos)
+                    and not lv.monster_at(*pos)
+                    and pos not in occupied]
+            if free:
+                free.sort(key=lambda p: abs(p[0] - a.x) + abs(p[1] - a.y))
+                a.x, a.y = free[0]
+            occupied.add((a.x, a.y))
 
     def _loot_item(self, item: dict, itype: str) -> str:
         pl = self.player
@@ -833,13 +944,22 @@ class Game:
     def _combat(self, m: Monster):
         pl  = self.player
         dmg = pl.hit_monster(m)
+
+        # Dwarf ally attacks the same target alongside the player
+        dwarf_msg = ""
+        for a in pl.allies:
+            if a.alive() and a.atype == "dwarf":
+                ddmg = m.take_hit(a.atk_roll(pl.level))
+                dwarf_msg = f" Dwarf hits for {ddmg}!"
+                break
+
         if not m.alive():
             gold    = m.loot_gold()
             pl.gold += gold
             leveled  = pl.gain_xp(m.xp)
             pl.kills += 1
             self.level.monsters.remove(m)
-            self.msg(f"You slay the {m.name}! (+{m.xp} XP, +{gold} gp)", CP_MSG_GOOD)
+            self.msg(f"You slay the {m.name}! (+{m.xp} XP, +{gold} gp){dwarf_msg}", CP_MSG_GOOD)
             if leveled:
                 self.msg(
                     f"*** LEVEL UP! You are now level {pl.level}! "
@@ -848,7 +968,7 @@ class Game:
         else:
             mdmg = pl.take_hit(m)
             self.msg(
-                f"You hit {m.name} for {dmg}. "
+                f"You hit {m.name} for {dmg}.{dwarf_msg} "
                 f"It strikes back for {mdmg}! "
                 f"({m.name} HP:{m.hp}/{m.max_hp})",
                 CP_DEFAULT)
@@ -861,6 +981,38 @@ class Game:
     def _monster_turns(self):
         pl = self.player
         lv = self.level
+
+        # ── Elf: ranged attack on nearest monster within 5 tiles ──
+        for a in pl.allies:
+            if not a.alive() or a.atype != "elf":
+                continue
+            targets = [m for m in lv.monsters if m.alive() and
+                       abs(m.x - pl.x) + abs(m.y - pl.y) <= 5]
+            if targets:
+                target = min(targets, key=lambda m: abs(m.x-pl.x)+abs(m.y-pl.y))
+                edgm = target.take_hit(a.atk_roll(pl.level))
+                if not target.alive():
+                    gold = target.loot_gold()
+                    pl.gold += gold
+                    pl.gain_xp(target.xp)
+                    pl.kills += 1
+                    lv.monsters.remove(target)
+                    self.msg(f"Elf shoots the {target.name}! Slain! (+{gold} gp)", CP_MON_G)
+                else:
+                    self.msg(f"Elf shoots {target.name} for {edgm} dmg "
+                             f"(HP:{target.hp}/{target.max_hp})", CP_MON_G)
+            break  # only one elf
+
+        # ── Ally countdown & cleanup ───────────────────────────
+        for a in list(pl.allies):
+            a.moves_left -= 1
+            if not a.alive():
+                pl.allies.remove(a)
+                self.msg(f"Your {a.name} has departed after 50 moves.", CP_MSG_INFO)
+
+        # ── Reposition allies ──────────────────────────────────
+        self._reposition_allies()
+
         for m in list(lv.monsters):
             if not m.alive():
                 continue
