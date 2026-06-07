@@ -113,24 +113,27 @@ POTIONS = [
 # ═══════════════════════════════════════════════════════════════════
 
 MONSTERS = [
-    dict(name="Giant Rat",   ch="r", col="y", hp=5,   atk=2,  arm=0,  xp=6,   gold=(0,3),    min_d=1),
-    dict(name="Kobold",      ch="k", col="g", hp=7,   atk=3,  arm=0,  xp=8,   gold=(1,4),    min_d=1),
-    dict(name="Goblin",      ch="g", col="g", hp=10,  atk=4,  arm=1,  xp=12,  gold=(2,7),    min_d=1),
-    dict(name="Orc",         ch="o", col="y", hp=18,  atk=7,  arm=2,  xp=22,  gold=(4,12),   min_d=2),
-    dict(name="Skeleton",    ch="s", col="w", hp=14,  atk=6,  arm=3,  xp=18,  gold=(2,8),    min_d=2),
-    dict(name="Zombie",      ch="z", col="g", hp=22,  atk=8,  arm=2,  xp=26,  gold=(3,10),   min_d=3),
-    dict(name="Hobgoblin",   ch="h", col="r", hp=24,  atk=9,  arm=3,  xp=32,  gold=(5,16),   min_d=3),
-    dict(name="Troll",       ch="T", col="g", hp=38,  atk=12, arm=5,  xp=52,  gold=(8,22),   min_d=4),
-    dict(name="Ogre",        ch="O", col="r", hp=42,  atk=14, arm=4,  xp=62,  gold=(10,26),  min_d=4),
-    dict(name="Dark Elf",    ch="E", col="c", hp=30,  atk=15, arm=6,  xp=58,  gold=(10,32),  min_d=5),
-    dict(name="Minotaur",    ch="M", col="y", hp=50,  atk=16, arm=7,  xp=75,  gold=(12,35),  min_d=5),
-    dict(name="Vampire",     ch="V", col="r", hp=48,  atk=18, arm=8,  xp=90,  gold=(15,45),  min_d=6),
-    dict(name="Wyvern",      ch="W", col="y", hp=60,  atk=20, arm=9,  xp=110, gold=(18,50),  min_d=6),
-    dict(name="Lich",        ch="L", col="c", hp=58,  atk=22, arm=10, xp=130, gold=(20,65),  min_d=7),
-    dict(name="Stone Golem", ch="G", col="w", hp=80,  atk=18, arm=15, xp=150, gold=(15,55),  min_d=7),
-    dict(name="Dragon",      ch="D", col="r", hp=90,  atk=28, arm=14, xp=220, gold=(35,90),  min_d=8),
-    dict(name="Death Knight", ch="K", col="c", hp=100, atk=30, arm=16, xp=280, gold=(40,100), min_d=9),
-    dict(name="Balrog",      ch="B", col="r", hp=120, atk=35, arm=18, xp=350, gold=(60,140), min_d=10),
+    dict(name="Giant Rat",    ch="r", col="r", hp=5,   atk=2,  arm=0,  xp=6,   gold=(0,3),    min_d=1),
+    dict(name="Kobold",       ch="k", col="r", hp=7,   atk=3,  arm=0,  xp=8,   gold=(1,4),    min_d=1),
+    dict(name="Goblin",       ch="g", col="r", hp=10,  atk=4,  arm=1,  xp=12,  gold=(2,7),    min_d=1),
+    dict(name="Orc",          ch="o", col="r", hp=18,  atk=7,  arm=2,  xp=22,  gold=(4,12),   min_d=2),
+    dict(name="Skeleton",     ch="s", col="r", hp=14,  atk=6,  arm=3,  xp=18,  gold=(2,8),    min_d=2),
+    dict(name="Zombie",       ch="z", col="r", hp=22,  atk=8,  arm=2,  xp=26,  gold=(3,10),   min_d=3),
+    dict(name="Hobgoblin",    ch="h", col="r", hp=24,  atk=9,  arm=3,  xp=32,  gold=(5,16),   min_d=3),
+    dict(name="Troll",        ch="T", col="r", hp=38,  atk=12, arm=5,  xp=52,  gold=(8,22),   min_d=4),
+    dict(name="Ogre",         ch="O", col="r", hp=42,  atk=14, arm=4,  xp=62,  gold=(10,26),  min_d=4),
+    dict(name="Dark Elf",     ch="E", col="r", hp=30,  atk=15, arm=6,  xp=58,  gold=(10,32),  min_d=5),
+    dict(name="Minotaur",     ch="M", col="r", hp=50,  atk=16, arm=7,  xp=75,  gold=(12,35),  min_d=5),
+    dict(name="Werewolf",     ch="w", col="r", hp=44,  atk=17, arm=5,  xp=70,  gold=(8,24),   min_d=5),
+    dict(name="Vampire",      ch="V", col="r", hp=48,  atk=18, arm=8,  xp=90,  gold=(15,45),  min_d=6),
+    dict(name="Wyvern",       ch="W", col="r", hp=60,  atk=20, arm=9,  xp=110, gold=(18,50),  min_d=6),
+    dict(name="Cyclops",      ch="C", col="r", hp=75,  atk=22, arm=8,  xp=130, gold=(20,55),  min_d=6),
+    dict(name="Lich",         ch="L", col="r", hp=58,  atk=22, arm=10, xp=130, gold=(20,65),  min_d=7),
+    dict(name="Stone Golem",  ch="G", col="r", hp=80,  atk=18, arm=15, xp=150, gold=(15,55),  min_d=7),
+    dict(name="Dragon",       ch="D", col="r", hp=90,  atk=28, arm=14, xp=220, gold=(35,90),  min_d=8),
+    dict(name="Necromancer",  ch="N", col="r", hp=55,  atk=25, arm=7,  xp=200, gold=(30,80),  min_d=8),
+    dict(name="Death Knight", ch="K", col="r", hp=100, atk=30, arm=16, xp=280, gold=(40,100), min_d=9),
+    dict(name="Balrog",       ch="B", col="r", hp=120, atk=35, arm=18, xp=350, gold=(60,140), min_d=10),
 ]
 
 # ═══════════════════════════════════════════════════════════════════
@@ -216,8 +219,10 @@ class Shopkeeper:
 class Ally:
     """A companion that follows the player for up to 50 moves."""
     TYPES = {
-        "elf":   dict(name="Elf Archer",   ch="e", col="g"),
-        "dwarf": dict(name="Dwarf Warrior", ch="d", col="y"),
+        "elf":   dict(name="Elf Archer",   ch="e", col="y", range=5, aoe=False),
+        "dwarf": dict(name="Dwarf Warrior", ch="d", col="y", range=0, aoe=False),
+        "ranger":dict(name="Ranger",        ch="R", col="y", range=8, aoe=False),
+        "wizard":dict(name="Wizard",        ch="Z", col="y", range=3, aoe=True),
     }
 
     def __init__(self, atype: str, x: int, y: int):
@@ -226,6 +231,8 @@ class Ally:
         self.name   = info["name"]
         self.ch     = info["ch"]
         self.col    = info["col"]
+        self.range  = info["range"]
+        self.aoe    = info["aoe"]
         self.x      = x
         self.y      = y
         self.moves_left = 50
@@ -234,8 +241,14 @@ class Ally:
         return self.moves_left > 0
 
     def atk_roll(self, player_level: int) -> int:
-        base = 4 + player_level * 2 if self.atype == "elf" else 3 + player_level * 2
-        return base + random.randint(0, 3)
+        if self.atype == "elf":
+            return 4 + player_level * 2 + random.randint(0, 3)
+        elif self.atype == "dwarf":
+            return 3 + player_level * 2 + random.randint(0, 3)
+        elif self.atype == "ranger":
+            return 5 + player_level * 2 + random.randint(0, 4)
+        else:  # wizard — AOE, slightly weaker per hit
+            return 3 + player_level + random.randint(0, 5)
 
 
 class Player:
@@ -449,11 +462,11 @@ class DungeonLevel:
                     break
 
     def _place_allies(self, rooms: list, shop_idx: int):
-        """Spawn one elf and one dwarf on the floor in separate rooms."""
+        """Spawn one of each ally type on the floor in separate rooms."""
         eligible = [r for i, r in enumerate(rooms) if i != 0 and i != shop_idx]
         random.shuffle(eligible)
         taken_positions: List[Tuple[int, int]] = []
-        for atype, room in zip(("elf", "dwarf"), eligible[:2]):
+        for atype, room in zip(("elf", "dwarf", "ranger", "wizard"), eligible[:4]):
             for _attempt in range(20):
                 ax, ay = room.random_inner()
                 if (self.tiles[ay][ax] == FLOOR and
@@ -510,27 +523,32 @@ class Game:
         ('!', CP_MSG_GOOD, 'Health Potion'),
     ]
     LEGEND_ALLY = [
-        ('e', CP_MON_G, 'Elf Archer'),
+        ('e', CP_MON_Y, 'Elf Archer'),
         ('d', CP_MON_Y, 'Dwarf Warrior'),
+        ('R', CP_MON_Y, 'Ranger'),
+        ('Z', CP_MON_Y, 'Wizard'),
     ]
     LEGEND_MON = [
-        ('r', CP_MON_Y, 'Giant Rat'),
-        ('k', CP_MON_G, 'Kobold'),
-        ('g', CP_MON_G, 'Goblin'),
-        ('o', CP_MON_Y, 'Orc'),
-        ('s', CP_MON_W, 'Skeleton'),
-        ('z', CP_MON_G, 'Zombie'),
+        ('r', CP_MON_R, 'Giant Rat'),
+        ('k', CP_MON_R, 'Kobold'),
+        ('g', CP_MON_R, 'Goblin'),
+        ('o', CP_MON_R, 'Orc'),
+        ('s', CP_MON_R, 'Skeleton'),
+        ('z', CP_MON_R, 'Zombie'),
         ('h', CP_MON_R, 'Hobgoblin'),
-        ('T', CP_MON_G, 'Troll'),
+        ('T', CP_MON_R, 'Troll'),
         ('O', CP_MON_R, 'Ogre'),
-        ('E', CP_MON_C, 'Dark Elf'),
-        ('M', CP_MON_Y, 'Minotaur'),
+        ('E', CP_MON_R, 'Dark Elf'),
+        ('M', CP_MON_R, 'Minotaur'),
+        ('w', CP_MON_R, 'Werewolf'),
         ('V', CP_MON_R, 'Vampire'),
-        ('W', CP_MON_Y, 'Wyvern'),
-        ('L', CP_MON_C, 'Lich'),
-        ('G', CP_MON_W, 'Stone Golem'),
+        ('W', CP_MON_R, 'Wyvern'),
+        ('C', CP_MON_R, 'Cyclops'),
+        ('L', CP_MON_R, 'Lich'),
+        ('G', CP_MON_R, 'Stone Golem'),
         ('D', CP_MON_R, 'Dragon'),
-        ('K', CP_MON_C, 'Death Knight'),
+        ('N', CP_MON_R, 'Necromancer'),
+        ('K', CP_MON_R, 'Death Knight'),
         ('B', CP_MON_R, 'Balrog'),
     ]
 
@@ -982,26 +1000,43 @@ class Game:
         pl = self.player
         lv = self.level
 
-        # ── Elf: ranged attack on nearest monster within 5 tiles ──
+        # ── Ranged/AOE allies attack ───────────────────────────────
         for a in pl.allies:
-            if not a.alive() or a.atype != "elf":
+            if not a.alive() or a.range == 0:
                 continue
-            targets = [m for m in lv.monsters if m.alive() and
-                       abs(m.x - pl.x) + abs(m.y - pl.y) <= 5]
-            if targets:
-                target = min(targets, key=lambda m: abs(m.x-pl.x)+abs(m.y-pl.y))
-                edgm = target.take_hit(a.atk_roll(pl.level))
+            in_range = [m for m in lv.monsters if m.alive() and
+                        abs(m.x - pl.x) + abs(m.y - pl.y) <= a.range]
+            if not in_range:
+                continue
+            if a.aoe:
+                # Wizard: hit every monster in range
+                for target in list(in_range):
+                    dmg = target.take_hit(a.atk_roll(pl.level))
+                    if not target.alive():
+                        gold = target.loot_gold()
+                        pl.gold += gold
+                        pl.gain_xp(target.xp)
+                        pl.kills += 1
+                        lv.monsters.remove(target)
+                        self.msg(f"Wizard blasts {target.name}! Slain! (+{gold} gp)", CP_MON_Y)
+                    else:
+                        self.msg(f"Wizard blasts {target.name} for {dmg} dmg "
+                                 f"(HP:{target.hp}/{target.max_hp})", CP_MON_Y)
+            else:
+                # Single-target: elf/ranger hit nearest
+                target = min(in_range, key=lambda m: abs(m.x-pl.x)+abs(m.y-pl.y))
+                dmg = target.take_hit(a.atk_roll(pl.level))
+                label = "Elf" if a.atype == "elf" else "Ranger"
                 if not target.alive():
                     gold = target.loot_gold()
                     pl.gold += gold
                     pl.gain_xp(target.xp)
                     pl.kills += 1
                     lv.monsters.remove(target)
-                    self.msg(f"Elf shoots the {target.name}! Slain! (+{gold} gp)", CP_MON_G)
+                    self.msg(f"{label} shoots {target.name}! Slain! (+{gold} gp)", CP_MON_Y)
                 else:
-                    self.msg(f"Elf shoots {target.name} for {edgm} dmg "
-                             f"(HP:{target.hp}/{target.max_hp})", CP_MON_G)
-            break  # only one elf
+                    self.msg(f"{label} shoots {target.name} for {dmg} dmg "
+                             f"(HP:{target.hp}/{target.max_hp})", CP_MON_Y)
 
         # ── Ally countdown & cleanup ───────────────────────────
         for a in list(pl.allies):
