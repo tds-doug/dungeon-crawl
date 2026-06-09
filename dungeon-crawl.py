@@ -508,7 +508,7 @@ class DungeonLevel:
 # ═══════════════════════════════════════════════════════════════════
 
 class Game:
-    PANEL_W = 26
+    PANEL_W = 36
     MSG_H   = 5
 
     # Legend entries: (glyph, color_pair, label)
@@ -822,7 +822,31 @@ class Game:
 
         if row < legend_end:
             pline(row, " MONSTERS", CP_MSG_INFO);  row += 1
-        draw_legend_entries(self.LEGEND_MON)
+
+        # 2-column monster list
+        col_w = (pw - 1) // 2  # width per column (17 with pw=35)
+        for i in range(0, len(self.LEGEND_MON), 2):
+            if row >= legend_end:
+                break
+            if 0 <= row < h:
+                try:
+                    ch_l, cp_l, lbl_l = self.LEGEND_MON[i]
+                    self.scr.addch(row, px0, ' ')
+                    self.scr.addch(row, px0 + 1, ch_l,
+                                   curses.color_pair(cp_l) | curses.A_BOLD)
+                    name_l = f"  {lbl_l}"[:(col_w - 2)]
+                    self.scr.addstr(row, px0 + 2, name_l.ljust(col_w - 2),
+                                    curses.color_pair(CP_DEFAULT))
+                    if i + 1 < len(self.LEGEND_MON):
+                        ch_r, cp_r, lbl_r = self.LEGEND_MON[i + 1]
+                        rx = px0 + col_w + 1
+                        self.scr.addch(row, rx, ch_r,
+                                       curses.color_pair(cp_r) | curses.A_BOLD)
+                        self.scr.addstr(row, rx + 1, f"  {lbl_r}"[:(col_w - 1)],
+                                        curses.color_pair(CP_DEFAULT))
+                except curses.error:
+                    pass
+            row += 1
 
         # Controls hint at bottom of panel
         pline(hint_row - 1, "-" * pw, CP_DEFAULT)
