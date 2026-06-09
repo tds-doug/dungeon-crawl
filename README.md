@@ -43,28 +43,44 @@ Or use the launch script:
 | `*` | Treasure chest (gold + item) |
 | `!` | Health Potion (walk over to use) |
 
+## Allies
+
+Allies appear in **yellow** on the floor. Walk over one to pick it up — it will follow you for **50 moves**, then depart. Only one of each type spawns per floor.
+
+| Symbol | Ally | Behavior |
+|--------|------|----------|
+| `e` | Elf Archer | Fires at the nearest monster within **5 tiles** each turn |
+| `d` | Dwarf Warrior | Strikes alongside you every time you attack |
+| `R` | Ranger | Fires at the nearest monster within **8 tiles** each turn (longer range, hits harder than the Elf) |
+| `Z` | Wizard | Blasts **every** monster within 3 tiles with AOE magic each turn |
+
 ## Monsters
 
-| Symbol | Monster | Difficulty |
-|--------|---------|------------|
-| `r` | Giant Rat | Easy |
-| `k` | Kobold | Easy |
-| `g` | Goblin | Easy |
-| `o` | Orc | Moderate |
-| `s` | Skeleton | Moderate |
-| `z` | Zombie | Moderate |
-| `h` | Hobgoblin | Moderate |
-| `T` | Troll | Hard |
-| `O` | Ogre | Hard |
-| `E` | Dark Elf | Hard |
-| `M` | Minotaur | Hard |
-| `V` | Vampire | Very Hard |
-| `W` | Wyvern | Very Hard |
-| `L` | Lich | Very Hard |
-| `G` | Stone Golem | Very Hard |
-| `D` | Dragon | Deadly |
-| `K` | Death Knight | Deadly |
-| `B` | Balrog | Deadly |
+All monsters appear in **red**. Deeper floors spawn tougher enemies.
+
+| Symbol | Monster | Difficulty | First Appears |
+|--------|---------|------------|---------------|
+| `r` | Giant Rat | Easy | Depth 1 |
+| `k` | Kobold | Easy | Depth 1 |
+| `g` | Goblin | Easy | Depth 1 |
+| `o` | Orc | Moderate | Depth 2 |
+| `s` | Skeleton | Moderate | Depth 2 |
+| `z` | Zombie | Moderate | Depth 3 |
+| `h` | Hobgoblin | Moderate | Depth 3 |
+| `T` | Troll | Hard | Depth 4 |
+| `O` | Ogre | Hard | Depth 4 |
+| `E` | Dark Elf | Hard | Depth 5 |
+| `M` | Minotaur | Hard | Depth 5 |
+| `w` | Werewolf | Hard | Depth 5 |
+| `V` | Vampire | Very Hard | Depth 6 |
+| `W` | Wyvern | Very Hard | Depth 6 |
+| `C` | Cyclops | Very Hard | Depth 6 |
+| `L` | Lich | Very Hard | Depth 7 |
+| `G` | Stone Golem | Very Hard | Depth 7 |
+| `D` | Dragon | Deadly | Depth 8 |
+| `N` | Necromancer | Deadly | Depth 8 |
+| `K` | Death Knight | Deadly | Depth 9 |
+| `B` | Balrog | Deadly | Depth 10 |
 
 ## Weapons
 
@@ -95,6 +111,7 @@ Or use the launch script:
 ## Gameplay Tips
 
 - **Bump into monsters** to attack them — no attack key needed.
+- **Allies** (`e`, `d`, `R`, `Z`) appear on each floor — walk over them to recruit them. They act automatically and last 50 moves. The Wizard's AOE and the Ranger's long range make tight corridors much safer.
 - **Health Potions** (`!`) on the floor restore full HP instantly when walked over.
 - **Shopkeepers** (`$`, shown in cyan) appear on every level — buy better gear as you find gold.
 - **Treasure chests** (`*`) contain gold and sometimes a weapon, armor, or potion. Better items are auto-equipped if they're stronger than what you're wearing.
