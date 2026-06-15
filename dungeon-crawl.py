@@ -862,7 +862,7 @@ class Game:
         draw_legend_entries(self.LEGEND_ALLY)
 
         if row < legend_end:
-            pline(row, " MONSTERS", CP_MSG_INFO);  row += 1
+            pline(row, " MONSTERS", CP_MON_R);  row += 1
 
         # 2-column monster list
         col_w = (pw - 1) // 2  # width per column (17 with pw=35)
