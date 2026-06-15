@@ -9,6 +9,7 @@
 # ------------------------------------------------------------------------------
 # 1.0.0 - Initial release.
 # 2.0.0 - Added potions to restore health.
+# 3.0.0 - Added fairy: golden F, flies for 200 moves, grants +100 gold and full health.
 #
 # Prerequisites:
 #
@@ -251,6 +252,17 @@ class Ally:
             return 3 + player_level + random.randint(0, 5)
 
 
+class Fairy:
+    """A magical visitor that flies around for 200 moves. Contact grants +100 gold and full health."""
+    def __init__(self, x: int, y: int):
+        self.x = x
+        self.y = y
+        self.moves_left = 200
+
+    def alive(self) -> bool:
+        return self.moves_left > 0
+
+
 class Player:
     def __init__(self):
         self.x         = 0
@@ -326,6 +338,7 @@ class DungeonLevel:
         self.treasures: List[Treasure]   = []
         self.floor_potions: List[Tuple[int, int]] = []
         self.floor_allies:  List[Ally]           = []
+        self.fairy: Optional[Fairy]              = None
         self.shopkeeper: Optional[Shopkeeper] = None
         self.stair_x   = 0
         self.stair_y   = 0
@@ -445,6 +458,7 @@ class DungeonLevel:
 
         self._place_floor_potions(rooms, shop_idx)
         self._place_allies(rooms, shop_idx)
+        self._place_fairy(rooms, shop_idx)
 
     def _place_floor_potions(self, rooms: list, shop_idx: int):
         """Scatter health potions across rooms (skip spawn room and shop room)."""
@@ -478,6 +492,23 @@ class DungeonLevel:
                     self.floor_allies.append(Ally(atype, ax, ay))
                     taken_positions.append((ax, ay))
                     break
+
+    def _place_fairy(self, rooms: list, shop_idx: int):
+        """Place one fairy somewhere on the level (not spawn or shop room)."""
+        eligible = [r for i, r in enumerate(rooms) if i != 0 and i != shop_idx]
+        if not eligible:
+            return
+        random.shuffle(eligible)
+        for room in eligible:
+            for _attempt in range(20):
+                fx, fy = room.random_inner()
+                if (self.tiles[fy][fx] == FLOOR and
+                        not self.monster_at(fx, fy) and
+                        not self.treasure_at(fx, fy) and
+                        (fx, fy) not in self.floor_potions and
+                        (fx, fy) != (self.stair_x, self.stair_y)):
+                    self.fairy = Fairy(fx, fy)
+                    return
 
     def _ally_at(self, x: int, y: int) -> Optional[Ally]:
         for a in self.floor_allies:
@@ -521,6 +552,7 @@ class Game:
         ('$', CP_TREASURE, 'Gold / Shop'),
         ('*', CP_TREASURE, 'Item + Gold'),
         ('!', CP_MSG_GOOD, 'Health Potion'),
+        ('F', CP_TREASURE, 'Fairy (+100g/HP)'),
     ]
     LEGEND_ALLY = [
         ('e', CP_MON_Y, 'Elf Archer'),
@@ -595,6 +627,8 @@ class Game:
         self.player.x = self.level.entry_x
         self.player.y = self.level.entry_y
         self.msg(f"You descend to dungeon level {self.player.depth}...", CP_MSG_INFO)
+        if self.level.fairy:
+            self.msg("You sense a magical fairy somewhere on this level!", CP_TREASURE)
 
     # ── Messages ──────────────────────────────────────────────
 
@@ -704,6 +738,13 @@ class Game:
             if 0 <= sx < map_w and 0 <= sy < map_h:
                 self._safe_addch(sy, sx, a.ch,
                                  curses.color_pair(self._mon_color(a.col)) | curses.A_BOLD)
+
+        # ── Fairy ─────────────────────────────────────────────
+        if lv.fairy and lv.fairy.alive():
+            fx, fy = lv.fairy.x - cam_x, lv.fairy.y - cam_y
+            if 0 <= fx < map_w and 0 <= fy < map_h:
+                self._safe_addch(fy, fx, 'F',
+                                 curses.color_pair(CP_TREASURE) | curses.A_BOLD)
 
         # ── Player ────────────────────────────────────────────
         px, py = pl.x - cam_x, pl.y - cam_y
@@ -904,6 +945,13 @@ class Game:
 
         pl.x, pl.y = nx, ny
 
+        # Fairy encounter — +100 gold and full health
+        if lv.fairy and lv.fairy.alive() and lv.fairy.x == nx and lv.fairy.y == ny:
+            pl.gold += 100
+            pl.hp = pl.max_hp
+            self.msg("A golden fairy blesses you! +100 gold and full health!", CP_TREASURE)
+            lv.fairy = None
+
         # Pick up floor potion (instant full heal)
         if (nx, ny) in lv.floor_potions:
             lv.floor_potions.remove((nx, ny))
@@ -1071,6 +1119,21 @@ class Game:
 
         # ── Reposition allies ──────────────────────────────────
         self._reposition_allies()
+
+        # ── Fairy movement & countdown ─────────────────────────
+        if lv.fairy and lv.fairy.alive():
+            lv.fairy.moves_left -= 1
+            if not lv.fairy.alive():
+                self.msg("The fairy sparkles and vanishes into thin air...", CP_MSG_INFO)
+                lv.fairy = None
+            else:
+                dirs = [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(1,-1),(-1,1),(1,1)]
+                random.shuffle(dirs)
+                for ddx, ddy in dirs:
+                    nx, ny = lv.fairy.x + ddx, lv.fairy.y + ddy
+                    if lv.walkable(nx, ny) and not lv.monster_at(nx, ny):
+                        lv.fairy.x, lv.fairy.y = nx, ny
+                        break
 
         for m in list(lv.monsters):
             if not m.alive():

@@ -42,6 +42,11 @@ Or use the launch script:
 | `$` | Gold pile or Shopkeeper |
 | `*` | Treasure chest (gold + item) |
 | `!` | Health Potion (walk over to use) |
+| `F` | Fairy (golden — walk into for +100 gold and full health) |
+
+## Fairy
+
+A golden `F` appears once per level and **flies around randomly for 200 moves** before vanishing. Walk into it to receive **+100 gold and full health**. You'll get a hint when you enter a level that has one.
 
 ## Allies
 
@@ -111,6 +116,7 @@ All monsters appear in **red**. Deeper floors spawn tougher enemies.
 ## Gameplay Tips
 
 - **Bump into monsters** to attack them — no attack key needed.
+- **The Fairy** (`F`, golden) appears once per level and drifts around for 200 moves — intercept it for +100 gold and a full heal.
 - **Allies** (`e`, `d`, `R`, `Z`) appear on each floor — walk over them to recruit them. They act automatically and last 50 moves. The Wizard's AOE and the Ranger's long range make tight corridors much safer.
 - **Health Potions** (`!`) on the floor restore full HP instantly when walked over.
 - **Shopkeepers** (`$`, shown in cyan) appear on every level — buy better gear as you find gold.
