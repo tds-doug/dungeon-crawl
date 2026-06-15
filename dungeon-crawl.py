@@ -220,10 +220,10 @@ class Shopkeeper:
 class Ally:
     """A companion that follows the player for up to 50 moves."""
     TYPES = {
-        "elf":   dict(name="Elf Archer",   ch="e", col="y", range=5, aoe=False),
-        "dwarf": dict(name="Dwarf Warrior", ch="d", col="y", range=0, aoe=False),
-        "ranger":dict(name="Ranger",        ch="R", col="y", range=8, aoe=False),
-        "wizard":dict(name="Wizard",        ch="Z", col="y", range=3, aoe=True),
+        "elf":   dict(name="Elf Archer",   ch="e", col="g", range=5, aoe=False),
+        "dwarf": dict(name="Dwarf Warrior", ch="d", col="g", range=0, aoe=False),
+        "ranger":dict(name="Ranger",        ch="R", col="g", range=8, aoe=False),
+        "wizard":dict(name="Wizard",        ch="Z", col="g", range=3, aoe=True),
     }
 
     def __init__(self, atype: str, x: int, y: int):
@@ -551,14 +551,14 @@ class Game:
         ('>', CP_STAIR,    'Stairs down'),
         ('$', CP_TREASURE, 'Gold / Shop'),
         ('*', CP_TREASURE, 'Item + Gold'),
-        ('!', CP_MSG_GOOD, 'Health Potion'),
+        ('!', CP_MON_Y, 'Health Potion'),
         ('F', CP_TREASURE, 'Fairy (+100g/HP)'),
     ]
     LEGEND_ALLY = [
-        ('e', CP_MON_Y, 'Elf Archer'),
-        ('d', CP_MON_Y, 'Dwarf Warrior'),
-        ('R', CP_MON_Y, 'Ranger'),
-        ('Z', CP_MON_Y, 'Wizard'),
+        ('e', CP_MON_G, 'Elf Archer'),
+        ('d', CP_MON_G, 'Dwarf Warrior'),
+        ('R', CP_MON_G, 'Ranger'),
+        ('Z', CP_MON_G, 'Wizard'),
     ]
     LEGEND_MON = [
         ('r', CP_MON_R, 'Giant Rat'),
@@ -712,7 +712,7 @@ class Game:
             sx, sy = fx - cam_x, fy - cam_y
             if 0 <= sx < map_w and 0 <= sy < map_h:
                 self._safe_addch(sy, sx, '!',
-                                 curses.color_pair(CP_MSG_GOOD) | curses.A_BOLD)
+                                 curses.color_pair(CP_MON_Y) | curses.A_BOLD)
 
         # ── Floor allies (not yet picked up) ──────────────────
         for a in lv.floor_allies:
@@ -813,7 +813,7 @@ class Game:
         active_allies = [a for a in pl.allies if a.alive()]
         if active_allies:
             pline(panel_row, "-" * pw, CP_DEFAULT);  panel_row += 1
-            pline(panel_row, " ALLIES", CP_MON_Y, True);  panel_row += 1
+            pline(panel_row, " ALLIES", CP_MON_G, True);  panel_row += 1
             for a in active_allies:
                 if panel_row < h:
                     try:
@@ -858,7 +858,7 @@ class Game:
         draw_legend_entries(self.LEGEND_MAP)
 
         if row < legend_end:
-            pline(row, " ALLIES", CP_MON_Y);  row += 1
+            pline(row, " ALLIES", CP_MON_G);  row += 1
         draw_legend_entries(self.LEGEND_ALLY)
 
         if row < legend_end:
@@ -963,7 +963,7 @@ class Game:
         if a:
             lv.floor_allies.remove(a)
             pl.allies.append(a)
-            self.msg(f"A {a.name} joins you for 50 moves!", CP_MON_Y)
+            self.msg(f"A {a.name} joins you for 50 moves!", CP_MON_G)
             self._reposition_allies()
 
         # Pick up treasure
@@ -1090,10 +1090,10 @@ class Game:
                         pl.gain_xp(target.xp)
                         pl.kills += 1
                         lv.monsters.remove(target)
-                        self.msg(f"Wizard blasts {target.name}! Slain! (+{gold} gp)", CP_MON_Y)
+                        self.msg(f"Wizard blasts {target.name}! Slain! (+{gold} gp)", CP_MON_G)
                     else:
                         self.msg(f"Wizard blasts {target.name} for {dmg} dmg "
-                                 f"(HP:{target.hp}/{target.max_hp})", CP_MON_Y)
+                                 f"(HP:{target.hp}/{target.max_hp})", CP_MON_G)
             else:
                 # Single-target: elf/ranger hit nearest
                 target = min(in_range, key=lambda m: abs(m.x-pl.x)+abs(m.y-pl.y))
@@ -1105,10 +1105,10 @@ class Game:
                     pl.gain_xp(target.xp)
                     pl.kills += 1
                     lv.monsters.remove(target)
-                    self.msg(f"{label} shoots {target.name}! Slain! (+{gold} gp)", CP_MON_Y)
+                    self.msg(f"{label} shoots {target.name}! Slain! (+{gold} gp)", CP_MON_G)
                 else:
                     self.msg(f"{label} shoots {target.name} for {dmg} dmg "
-                             f"(HP:{target.hp}/{target.max_hp})", CP_MON_Y)
+                             f"(HP:{target.hp}/{target.max_hp})", CP_MON_G)
 
         # ── Ally countdown & cleanup ───────────────────────────
         for a in list(pl.allies):
